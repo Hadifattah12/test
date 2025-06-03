@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 700px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .article {
+      border: 1px solid #eee;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .article h2 {
+      margin-top: 0;
+    }
+
+    mark {
+      background-color: yellow;
+    }
+  </style>
+
+
+</head>
+<body>
+  <h1>Search Articles</h1>
+  <input type="text" id="searchInput" placeholder="Type to search..." />
+  <div id="results"></div>
+  <script>
+    const articles = [
+      {
+        title: "React Basics",
+        content: "React is a JavaScript library for building user interfaces"
+      }
+    ];
+
+    const searchInput = document.getElementById('searchInput');
+    const resultsDiv = document.getElementById('results');
+
+    function escapeHTML(str) {
+      return str.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+    }
+
+    function highlight(text, search) {
+      if (!search) return escapeHTML(text);
+      const regex = new RegExp(`(${search})`, 'gi');
+      return escapeHTML(text).replace(regex, '<mark>$1</mark>');
+    }
+
+    function renderResults(query) {
+      resultsDiv.innerHTML = '';
+      const filtered = articles.filter(article =>
+        article.title.toLowerCase().includes(query.toLowerCase()) ||
+        article.content.toLowerCase().includes(query.toLowerCase())
+      );
+      if (filtered.length === 0) {
+        resultsDiv.innerHTML = '<p>No results found.</p>';
+        return;
+      }
+      filtered.forEach(article => {
+        const div = document.createElement('div');
+        div.className = 'article';
+        div.innerHTML = `
+          <h2>${highlight(article.title, query)}</h2>
+          <p>${highlight(article.content, query)}</p>
+        `;
+        resultsDiv.appendChild(div);
+      });
+    }
+    searchInput.addEventListener('input', (e) => {
+      renderResults(e.target.value.trim());
+    });
+    renderResults('');
+  </script>
+</body>
+</html>
